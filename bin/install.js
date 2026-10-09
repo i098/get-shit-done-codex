@@ -17,7 +17,7 @@ const NPM_PACKAGE = pkg.name;
 const NPM_PACKAGE_LATEST = `${NPM_PACKAGE}@latest`;
 const UPSTREAM_PACKAGE = 'get-shit-done-cc';
 const UPSTREAM_REPO = 'https://github.com/glittercowboy/get-shit-done';
-const FORK_REPO = 'https://github.com/undeemed/get-shit-done-codex';
+const FORK_REPO = 'https://github.com/i098/get-shit-done-codex';
 
 // ─── Codex Config Constants ───────────────────────────────────────────────────
 const GSD_CODEX_MARKER = '# GSD Agent Configuration \u2014 managed by get-shit-done installer';
