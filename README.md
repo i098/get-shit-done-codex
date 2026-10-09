@@ -8,9 +8,9 @@ Fork of [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES, ada
 > Codex is now supported upstream. This fork remains focused on Codex-specific UX, compatibility, and experimental features for personal use.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/i098/get-shit-done-codex/ci.yml?style=flat-square&label=CI&color=0d9488)](https://github.com/i098/get-shit-done-codex/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/%40undeemed%2Fget-shit-done-codex?style=flat-square&color=4f46e5)](https://www.npmjs.com/package/@undeemed/get-shit-done-codex)
+[![npm version](https://img.shields.io/npm/v/%40i098%2Fget-shit-done-codex?style=flat-square&color=4f46e5)](https://www.npmjs.com/package/@i098/get-shit-done-codex)
 [![License](https://img.shields.io/badge/license-MIT-d97706?style=flat-square)](LICENSE)
-![npm Downloads](https://img.shields.io/npm/dt/@undeemed/get-shit-done-codex?style=flat-square&color=7c3aed)
+![npm Downloads](https://img.shields.io/npm/dt/@i098/get-shit-done-codex?style=flat-square&color=7c3aed)
 
 ## What This Does
 
@@ -56,7 +56,7 @@ graph TB
 ## Installation
 
 ```bash
-npx @undeemed/get-shit-done-codex@latest
+npx @i098/get-shit-done-codex@latest
 ```
 
 You can install globally (`~/.codex/`) or locally (`./`).
@@ -64,16 +64,16 @@ You can install globally (`~/.codex/`) or locally (`./`).
 ### Recommended
 
 ```bash
-npx @undeemed/get-shit-done-codex --global
+npx @i098/get-shit-done-codex --global
 ```
 
 ```bash
-npx @undeemed/get-shit-done-codex --global   # Install to ~/.codex/
-npx @undeemed/get-shit-done-codex --local    # Install to current directory
-npx @undeemed/get-shit-done-codex --path .   # Install to a specific directory
-npx @undeemed/get-shit-done-codex --global --migrate             # Clean up legacy prompts/
-npx @undeemed/get-shit-done-codex --verify --global              # Check install integrity
-npx @undeemed/get-shit-done-codex --verify --repair --global     # Auto-repair
+npx @i098/get-shit-done-codex --global   # Install to ~/.codex/
+npx @i098/get-shit-done-codex --local    # Install to current directory
+npx @i098/get-shit-done-codex --path .   # Install to a specific directory
+npx @i098/get-shit-done-codex --global --migrate             # Clean up legacy prompts/
+npx @i098/get-shit-done-codex --verify --global              # Check install integrity
+npx @i098/get-shit-done-codex --verify --repair --global     # Auto-repair
 ```
 
 After installation, run `codex` (CLI) or `codex app` (Desktop), then run `$gsd-help`.
@@ -129,7 +129,7 @@ This fork is intentionally **AGENTS.md-first** for Codex reliability:
 $gsd-update
 
 # Update from terminal
-npx @undeemed/get-shit-done-codex@latest --global
+npx @i098/get-shit-done-codex@latest --global
 ```
 
 The installer writes a `get-shit-done/VERSION` file so `$gsd-update` can detect installed vs latest and show changelog before updating.
@@ -355,7 +355,7 @@ Git bisect finds exact failing task. Each task independently revertable.
 **Update to latest:**
 
 ```bash
-npx @undeemed/get-shit-done-codex@latest
+npx @i098/get-shit-done-codex@latest
 ```
 
 **Can users be notified when an update is available?**

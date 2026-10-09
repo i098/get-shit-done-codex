@@ -46,7 +46,7 @@ const child = spawn(process.execPath, ['-e', `
 
   let latest = null;
   try {
-    latest = execSync('npm view @undeemed/get-shit-done-codex version', { encoding: 'utf8', timeout: 10000, windowsHide: true }).trim();
+    latest = execSync('npm view @i098/get-shit-done-codex version', { encoding: 'utf8', timeout: 10000, windowsHide: true }).trim();
   } catch (e) {}
 
   const result = {
