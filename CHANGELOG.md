@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.25.1
+
+- First `@i098/get-shit-done-codex` release from GitHub Actions with npm trusted publishing and provenance. No code changes.
+
 ## 1.25.0
 
 - Publish as `@i098/get-shit-done-codex`. The installer, the update check hook and the README use the new name.
