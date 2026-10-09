@@ -1,0 +1,73 @@
+{
+  "name": "@undeemed/get-shit-done-codex",
+  "version": "1.24.3",
+  "description": "A meta-prompting, context engineering and spec-driven development system for OpenAI Codex (CLI and Desktop). Fork of get-shit-done by TÂCHES, adapted for Codex.",
+  "bin": {
+    "get-shit-done-codex": "bin/install.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "README.md",
+    "bin",
+    "commands",
+    "get-shit-done",
+    "agents",
+    "hooks/dist",
+    "scripts",
+    ".codex"
+  ],
+  "keywords": [
+    "get-shit-done",
+    "gsd",
+    "openai",
+    "codex",
+    "codex-cli",
+    "codex-desktop",
+    "codex-app",
+    "openai-codex",
+    "ai",
+    "ai-coding",
+    "ai-agents",
+    "meta-prompting",
+    "context-engineering",
+    "context-rot",
+    "spec-driven-development",
+    "prompt-engineering",
+    "multi-agent",
+    "subagent",
+    "ai-workflow",
+    "developer-tools",
+    "dev-tools",
+    "productivity",
+    "code-generation",
+    "agents"
+  ],
+  "author": "undeemed <jerry.x0930@gmail.com>",
+  "contributors": [
+    "TÂCHES (original author)"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/undeemed/get-shit-done-codex.git"
+  },
+  "homepage": "https://github.com/undeemed/get-shit-done-codex",
+  "bugs": {
+    "url": "https://github.com/undeemed/get-shit-done-codex/issues"
+  },
+  "engines": {
+    "node": ">=16.7.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  },
+  "scripts": {
+    "build:hooks": "node scripts/build-hooks.js",
+    "prepublishOnly": "npm run build:hooks",
+    "test": "node scripts/run-tests.cjs",
+    "test:coverage": "node scripts/run-tests.cjs --coverage"
+  }
+}

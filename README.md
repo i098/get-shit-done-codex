@@ -1,0 +1,402 @@
+# get-shit-done-codex (Codex CLI/Desktop)
+
+A meta-prompting, context engineering and spec-driven development system for [OpenAI Codex](https://github.com/openai/codex), including both CLI and Desktop.
+
+Fork of [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES, adapted for Codex CLI by [undeemed](https://github.com/undeemed).
+
+> [!CAUTION]
+> Codex is now supported upstream. This fork remains focused on Codex-specific UX, compatibility, and experimental features for personal use.
+
+[![CI](https://img.shields.io/github/actions/workflow/status/undeemed/get-shit-done-codex/ci.yml?style=flat-square&label=CI&color=0d9488)](https://github.com/undeemed/get-shit-done-codex/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/%40undeemed%2Fget-shit-done-codex?style=flat-square&color=4f46e5)](https://www.npmjs.com/package/@undeemed/get-shit-done-codex)
+[![License](https://img.shields.io/badge/license-MIT-d97706?style=flat-square)](LICENSE)
+![npm Downloads](https://img.shields.io/npm/dt/@undeemed/get-shit-done-codex?style=flat-square&color=7c3aed)
+
+## What This Does
+
+GSD solves **context rot** — the quality degradation that happens as AI fills its context window. It structures your project through specs and plans so each task runs in a fresh context with exactly what it needs. No accumulated garbage, no forgotten requirements.
+
+```mermaid
+graph TB
+  subgraph codex["GSD-Codex"]
+    direction TB
+    A["AGENTS.md<br/><i>behavior contract</i>"] --> O["Thin Orchestrator<br/><i>30-40% context</i>"]
+    C[".codex/config.toml<br/><i>agent roles + flags</i>"] --> O
+    O -->|"spawn"| S1["gsd-planner<br/><i>fresh 200k context</i>"]
+    O -->|"spawn"| S2["gsd-executor<br/><i>fresh 200k context</i>"]
+    O -->|"spawn"| S3["gsd-verifier<br/><i>fresh 200k context</i>"]
+    S1 -.->|"agents/gsd-planner.md<br/>loaded at spawn"| D1["700+ line<br/>role definition"]
+    S2 -.->|"agents/gsd-executor.md"| D2["700+ line<br/>role definition"]
+    S3 -.->|"agents/gsd-verifier.md"| D3["700+ line<br/>role definition"]
+  end
+
+  style codex fill:#1a1a2e,stroke:#00d4ff,color:#e0e0e0
+  style A fill:#0d2137,stroke:#00d4ff,color:#e0e0e0
+  style C fill:#0d2137,stroke:#00d4ff,color:#e0e0e0
+  style O fill:#162447,stroke:#00d4ff,color:#e0e0e0
+  style S1 fill:#1f4068,stroke:#1b998b,color:#e0e0e0
+  style S2 fill:#1f4068,stroke:#1b998b,color:#e0e0e0
+  style S3 fill:#1f4068,stroke:#1b998b,color:#e0e0e0
+  style D1 fill:#0d2137,stroke:#444,color:#999
+  style D2 fill:#0d2137,stroke:#444,color:#999
+  style D3 fill:#0d2137,stroke:#444,color:#999
+```
+
+## What Changed In This Fork
+
+- **AGENTS-first for Codex:** `AGENTS.md` is the primary behavior contract. [Agent.md Info](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals)
+- **Default Model is flagship:** Codex 5.3 is used for all profile modes, but at different thinking levels. [Model Profiles](https://github.com/undeemed/get-shit-done-codex/edit/main/README.md#model-profiles)
+- **Native skills:** all commands use `$gsd-*` skill notation — no prompt aliases needed.
+- **Full config distribution:** installer ships `.codex/config.toml` (multi-agent, feature flags, MCP servers) and 11 rich `agents/*.md` sub-agent definitions — everything needed for multi-agent orchestration out of the box.
+- **Sub-agent linking:** each agent role in `config.toml` uses `developer_instructions` to load its full role definition from `agents/gsd-*.md` at runtime — no manual wiring needed.
+- **Overwrite protection:** `config.toml` is never overwritten on reinstall. `AGENTS.md` prompts for confirmation on global installs.
+- **Installer integrity checks:** `--verify` audits `AGENTS.md`, `config.toml`, agent definitions, command surfaces, and version metadata. `--repair` restores missing artifacts.
+- **One-click trust:** Codex prompts to trust the project on first run so the config takes effect.
+
+## Installation
+
+```bash
+npx @undeemed/get-shit-done-codex@latest
+```
+
+You can install globally (`~/.codex/`) or locally (`./`).
+
+### Recommended
+
+```bash
+npx @undeemed/get-shit-done-codex --global
+```
+
+```bash
+npx @undeemed/get-shit-done-codex --global   # Install to ~/.codex/
+npx @undeemed/get-shit-done-codex --local    # Install to current directory
+npx @undeemed/get-shit-done-codex --path .   # Install to a specific directory
+npx @undeemed/get-shit-done-codex --global --migrate             # Clean up legacy prompts/
+npx @undeemed/get-shit-done-codex --verify --global              # Check install integrity
+npx @undeemed/get-shit-done-codex --verify --repair --global     # Auto-repair
+```
+
+After installation, run `codex` (CLI) or `codex app` (Desktop), then run `$gsd-help`.
+
+### What Gets Installed
+
+The installer distributes everything GSD needs:
+
+- **`AGENTS.md`** — behavior contract and command reference for Codex
+- **`.codex/config.toml`** — multi-agent mode, feature flags, agent role registry, MCP servers
+- **`agents/gsd-*.md`** — rich agent definitions (700+ lines each) for sub-agent orchestration
+- **`skills/gsd-*/SKILL.md`** — native Codex skill commands
+- **`get-shit-done/`** — workflow files, templates, and references
+
+On first run, Codex may prompt you to **trust the project** so the config takes effect (one-time, one-click).
+
+> [!NOTE]
+> `.codex/config.toml` is non-destructive — the installer skips it if you already have one, so your customizations are preserved on updates. You can manually update it later referencing the .codex/.toml in this repo.
+
+### Installed File Structure
+
+```text
+~/.codex/
+├── AGENTS.md
+├── .codex/config.toml
+├── agents/gsd-*.md
+├── skills/gsd-*/SKILL.md
+└── get-shit-done/
+```
+
+For local installs, replace `~/.codex/` with `./`.
+
+### Verify And Repair
+
+- `--verify`: checks `AGENTS.md`, `config.toml`, agent definitions, command surfaces, workflow assets, and version metadata.
+- `--verify --repair`: reinstalls missing/broken artifacts and verifies again.
+- Migration is **detect-then-confirm**, not automatic:
+  - Interactive install asks before removing legacy surface files
+  - Non-interactive install skips cleanup unless `--migrate` is passed
+  - `--skip-migrate` keeps legacy files explicitly
+
+### AGENTS-First Reliability
+
+This fork is intentionally **AGENTS.md-first** for Codex reliability:
+
+- `AGENTS.md` is the source of truth for behavior and workflow constraints
+- `$gsd-*` skills are lightweight command wrappers around the same workflow docs
+
+## Staying Updated
+
+```bash
+# Check for updates from inside Codex
+$gsd-update
+
+# Update from terminal
+npx @undeemed/get-shit-done-codex@latest --global
+```
+
+The installer writes a `get-shit-done/VERSION` file so `$gsd-update` can detect installed vs latest and show changelog before updating.
+
+## npm Trusted Publisher (OIDC)
+
+This repo includes a GitHub Actions publish workflow at:
+
+- `.github/workflows/publish.yml`
+
+When setting up npm Trusted Publisher for this package, use:
+
+- **Publisher:** `GitHub Actions`
+- **Organization or user:** `undeemed`
+- **Repository:** `get-shit-done-codex`
+- **Workflow filename:** `publish.yml`
+- **Environment name:** leave blank (unless you later bind this workflow to a specific GitHub Environment)
+
+## Quick Start
+
+```bash
+# 1. Initialize project (questions → research → requirements → roadmap)
+$gsd-new-project
+
+# 2. Plan the first phase
+$gsd-plan-phase 1
+
+# 3. Execute the phase
+$gsd-execute-phase 1
+
+# 4. Verify it works
+$gsd-verify-work 1
+```
+
+## How It Works
+
+### 1. Initialize Project
+
+```
+$gsd-new-project
+```
+
+One command takes you from idea to ready-for-planning:
+
+- Deep questioning to understand what you're building
+- Optional domain research (spawns 4 parallel researcher agents)
+- Requirements definition with v1/v2/out-of-scope scoping
+- Roadmap creation with phase breakdown
+
+**Creates:** `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, `STATE.md`, `.planning/research/`
+
+### 2. Plan Phase
+
+```
+$gsd-plan-phase 1
+```
+
+The system researches how to implement the phase, creates 2-3 atomic task plans, and verifies them against requirements.
+
+**Creates:** `{phase}-RESEARCH.md`, `{phase}-{N}-PLAN.md`
+
+### 3. Execute Phase
+
+```
+$gsd-execute-phase 1
+```
+
+Runs all plans in parallel waves. Each plan executes in a fresh 200k context window. Every task gets its own atomic commit.
+
+**Creates:** `{phase}-{N}-SUMMARY.md`, `{phase}-VERIFICATION.md`
+
+### 4. Verify Work
+
+```
+$gsd-verify-work 1
+```
+
+Manual user acceptance testing. The system walks you through testable deliverables and creates fix plans if issues are found.
+
+## Commands
+
+**Core Workflow**
+
+| Command                    | Description                                                       |
+| -------------------------- | ----------------------------------------------------------------- |
+| `$gsd-new-project`         | Initialize project: questions → research → requirements → roadmap |
+| `$gsd-create-roadmap`      | Create roadmap and state tracking                                 |
+| `$gsd-map-codebase`        | Map existing codebase (brownfield projects)                       |
+| `$gsd-plan-phase [N]`      | Research + plan + verify for a phase                              |
+| `$gsd-execute-phase <N>`   | Execute all plans in parallel waves                               |
+| `$gsd-execute-plan [path]` | Execute a single PLAN.md file                                     |
+| `$gsd-verify-work [N]`     | Manual user acceptance testing                                    |
+| `$gsd-progress`            | Show current position and what's next                             |
+| `$gsd-quick`               | Quick-start shortcut for small tasks                              |
+
+**Phase Management**
+
+| Command                           | Description                         |
+| --------------------------------- | ----------------------------------- |
+| `$gsd-add-phase`                  | Append phase to roadmap             |
+| `$gsd-insert-phase [N]`           | Insert urgent work at position N    |
+| `$gsd-remove-phase [N]`           | Remove a future phase               |
+| `$gsd-discuss-phase [N]`          | Gather context before planning      |
+| `$gsd-research-phase [N]`         | Deep ecosystem research for a phase |
+| `$gsd-list-phase-assumptions [N]` | Review assumptions before planning  |
+
+**Milestones**
+
+| Command                     | Description                          |
+| --------------------------- | ------------------------------------ |
+| `$gsd-complete-milestone`   | Archive milestone, prep next version |
+| `$gsd-discuss-milestone`    | Gather context for next milestone    |
+| `$gsd-new-milestone [name]` | Create new milestone with phases     |
+| `$gsd-audit-milestone`      | Audit milestone completeness         |
+| `$gsd-plan-milestone-gaps`  | Plan for gaps in current milestone   |
+
+**Session & Debugging**
+
+| Command                | Description                            |
+| ---------------------- | -------------------------------------- |
+| `$gsd-pause-work`      | Create handoff when stopping mid-phase |
+| `$gsd-resume-work`     | Restore from last session              |
+| `$gsd-consider-issues` | Review deferred issues                 |
+| `$gsd-plan-fix [plan]` | Plan fixes for UAT issues              |
+| `$gsd-debug`           | Diagnose and debug issues              |
+| `$gsd-cleanup`         | Clean up planning artifacts            |
+
+**Configuration & Utilities**
+
+| Command                | Description                                            |
+| ---------------------- | ------------------------------------------------------ |
+| `$gsd-set-profile <P>` | Switch model profile (`quality`, `balanced`, `budget`) |
+| `$gsd-settings`        | View or edit project config                            |
+| `$gsd-health`          | Project health check                                   |
+| `$gsd-add-tests`       | Add tests for a phase                                  |
+| `$gsd-add-todo`        | Add a todo item                                        |
+| `$gsd-check-todos`     | Review open todos                                      |
+| `$gsd-reapply-patches` | Reapply saved patches                                  |
+| `$gsd-update`          | Check for and install updates                          |
+| `$gsd-help`            | Show all commands                                      |
+
+## Why It Works
+
+### Context Engineering
+
+GSD maintains structured context files that stay within quality limits:
+
+- `PROJECT.md` — Project vision, always loaded
+- `REQUIREMENTS.md` — Scoped v1/v2 requirements with phase traceability
+- `ROADMAP.md` — Where you're going, what's done
+- `STATE.md` — Decisions, blockers, position — memory across sessions
+- `PLAN.md` — Atomic task with XML structure, verification steps
+- `SUMMARY.md` — What happened, committed to history
+
+### Multi-Agent Orchestration
+
+Every stage uses a thin orchestrator that spawns specialized agents:
+
+- **Research** — 4 parallel researchers investigate stack, features, architecture, pitfalls
+- **Planning** — Planner creates plans, checker verifies, loops until pass
+- **Execution** — Executors implement in parallel, each with fresh 200k context
+- **Verification** — Verifier checks codebase against goals, debuggers diagnose failures
+
+The orchestrator stays at 30-40% context. The work happens in fresh subagent contexts.
+
+### Sub-Agent Roles
+
+GSD ships 11 specialized agent definitions in `agents/gsd-*.md`, each wired into `config.toml` via `developer_instructions`:
+
+| Agent                      | Role                                                       |
+| -------------------------- | ---------------------------------------------------------- |
+| `gsd-planner`              | Draft atomic PLAN.md files with tasks and success criteria |
+| `gsd-executor`             | Execute plans with atomic commits and verification         |
+| `gsd-verifier`             | Goal-backward verification that outcomes are delivered     |
+| `gsd-debugger`             | Hypothesis testing, root cause isolation, fix proposals    |
+| `gsd-phase-researcher`     | Research implementation patterns for planners              |
+| `gsd-project-researcher`   | Ecosystem research for roadmap creation                    |
+| `gsd-research-synthesizer` | Synthesize parallel research into actionable inputs        |
+| `gsd-plan-checker`         | Stress-test plan quality and requirement coverage          |
+| `gsd-codebase-mapper`      | Map stack, architecture, and conventions                   |
+| `gsd-roadmapper`           | Turn requirements into phased roadmaps                     |
+| `gsd-integration-checker`  | Verify cross-phase wiring and e2e behavior                 |
+
+Each agent gets its full role definition (700+ lines) loaded at spawn time — no context wasted on the orchestrator.
+
+### Model Profiles
+
+All agents use **gpt-5.3-codex** with role-based thinking levels:
+
+| Profile    | Planner/Debugger | Executor/Verifier | Researchers/Mapper |
+| ---------- | ---------------- | ----------------- | ------------------ |
+| `quality`  | 🔴 xhigh         | 🟢 high           | 🟢 high/🟡 medium  |
+| `balanced` | 🔴 xhigh         | 🟢 high           | 🟡 medium          |
+| `budget`   | 🟢 high          | 🟡 medium         | 🟡 medium          |
+
+Switch profiles: `$gsd-set-profile budget`
+
+### Atomic Git Commits
+
+Each task gets its own commit immediately after completion:
+
+```bash
+feat(01-01): implement user authentication
+feat(01-01): add password hashing
+docs(01-01): complete auth-setup plan
+```
+
+Git bisect finds exact failing task. Each task independently revertable.
+
+## Troubleshooting
+
+**Commands not found?**
+
+- Restart Codex to reload installed command surfaces
+- Check `~/.codex/skills/gsd-*/SKILL.md` (global) or `./skills/gsd-*/SKILL.md` (local)
+
+**Multi-agent / sub-agents not working?**
+
+- Check `.codex/config.toml` exists in your install directory
+- Ensure the project is **trusted** in Codex (it prompts on first run)
+- Run `--verify` to check all artifacts are present
+
+**Update to latest:**
+
+```bash
+npx @undeemed/get-shit-done-codex@latest
+```
+
+**Can users be notified when an update is available?**
+
+- Yes. The installer prints an update notice if a newer npm version exists.
+- In-Codex update checks are available via `$gsd-update`.
+- For release notifications outside the CLI, enable GitHub release watching on this repo.
+
+**`gsd-tools` scripting tips**
+
+- Use `--cwd <path>` (or `--cwd=<path>`) to target a specific project directory from automation scripts.
+- Use `state json` for machine-readable state; use `state-snapshot` for structured markdown-field extraction.
+- Use `requirements mark-complete REQ-01 REQ-02` to update both requirement checkboxes and traceability rows.
+- If `commit` appears to skip unexpectedly, check `.planning/config.json` for `commit_docs: false` and also check user defaults in `~/.gsd/defaults.json`.
+
+## More Documentation
+
+For deeper guides, detailed workflows, and comprehensive documentation, see the [original get-shit-done README](https://github.com/taches/get-shit-done/blob/main/README.md).
+
+The original repository contains:
+
+- Detailed workflow explanations
+- Advanced usage patterns
+- Complete command reference
+- Best practices and examples
+- Architecture and design principles
+
+**Note:** The original README is written for multiple runtimes. When following it, remember that this fork uses:
+
+- Codex-native skills (`$gsd-*`)
+- OpenAI Codex CLI & Desktop
+- `gpt-5.3-codex` with role-based thinking levels (not multi-model profiles)
+
+## Keywords
+
+`get-shit-done` `gsd` `openai` `codex` `codex-cli` `codex-desktop` `codex-app` `openai-codex` `ai` `ai-coding` `ai-agents` `meta-prompting` `context-engineering` `context-rot` `spec-driven-development` `prompt-engineering` `multi-agent` `subagent` `ai-workflow` `developer-tools` `dev-tools` `productivity` `code-generation`
+
+## Credits
+
+Original project by [TÂCHES](https://github.com/taches). This fork adapts it for Codex CLI.
+
+## License
+
+MIT
