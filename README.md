@@ -7,7 +7,7 @@ Fork of [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES, ada
 > [!CAUTION]
 > Codex is now supported upstream. This fork remains focused on Codex-specific UX, compatibility, and experimental features for personal use.
 
-[![CI](https://img.shields.io/github/actions/workflow/status/undeemed/get-shit-done-codex/ci.yml?style=flat-square&label=CI&color=0d9488)](https://github.com/undeemed/get-shit-done-codex/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/i098/get-shit-done-codex/ci.yml?style=flat-square&label=CI&color=0d9488)](https://github.com/i098/get-shit-done-codex/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/%40undeemed%2Fget-shit-done-codex?style=flat-square&color=4f46e5)](https://www.npmjs.com/package/@undeemed/get-shit-done-codex)
 [![License](https://img.shields.io/badge/license-MIT-d97706?style=flat-square)](LICENSE)
 ![npm Downloads](https://img.shields.io/npm/dt/@undeemed/get-shit-done-codex?style=flat-square&color=7c3aed)
@@ -45,7 +45,7 @@ graph TB
 ## What Changed In This Fork
 
 - **AGENTS-first for Codex:** `AGENTS.md` is the primary behavior contract. [Agent.md Info](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals)
-- **Default Model is flagship:** Codex 5.3 is used for all profile modes, but at different thinking levels. [Model Profiles](https://github.com/undeemed/get-shit-done-codex/edit/main/README.md#model-profiles)
+- **Default Model is flagship:** Codex 5.3 is used for all profile modes, but at different thinking levels. [Model Profiles](#model-profiles)
 - **Native skills:** all commands use `$gsd-*` skill notation — no prompt aliases needed.
 - **Full config distribution:** installer ships `.codex/config.toml` (multi-agent, feature flags, MCP servers) and 11 rich `agents/*.md` sub-agent definitions — everything needed for multi-agent orchestration out of the box.
 - **Sub-agent linking:** each agent role in `config.toml` uses `developer_instructions` to load its full role definition from `agents/gsd-*.md` at runtime — no manual wiring needed.
@@ -138,14 +138,14 @@ The installer writes a `get-shit-done/VERSION` file so `$gsd-update` can detect 
 
 This repo includes a GitHub Actions publish workflow at:
 
-- `.github/workflows/publish.yml`
+- `.github/workflows/release.yml` (runs on each `v*` tag)
 
 When setting up npm Trusted Publisher for this package, use:
 
 - **Publisher:** `GitHub Actions`
-- **Organization or user:** `undeemed`
+- **Organization or user:** `i098`
 - **Repository:** `get-shit-done-codex`
-- **Workflow filename:** `publish.yml`
+- **Workflow filename:** `release.yml`
 - **Environment name:** leave blank (unless you later bind this workflow to a specific GitHub Environment)
 
 ## Quick Start

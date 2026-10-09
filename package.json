@@ -1,6 +1,6 @@
 {
   "name": "@undeemed/get-shit-done-codex",
-  "version": "1.24.3",
+  "version": "1.24.4",
   "description": "A meta-prompting, context engineering and spec-driven development system for OpenAI Codex (CLI and Desktop). Fork of get-shit-done by TÂCHES, adapted for Codex.",
   "bin": {
     "get-shit-done-codex": "bin/install.js"
@@ -51,11 +51,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/undeemed/get-shit-done-codex.git"
+    "url": "git+https://github.com/i098/get-shit-done-codex.git"
   },
-  "homepage": "https://github.com/undeemed/get-shit-done-codex",
+  "homepage": "https://github.com/i098/get-shit-done-codex",
   "bugs": {
-    "url": "https://github.com/undeemed/get-shit-done-codex/issues"
+    "url": "https://github.com/i098/get-shit-done-codex/issues"
   },
   "engines": {
     "node": ">=16.7.0"
